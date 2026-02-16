@@ -36,4 +36,4 @@ python demo.py
 Run the FastAPI backend
 ```bash
 uvicorn main:app --reload
-```bash
+```
