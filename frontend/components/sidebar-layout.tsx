@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Receipt, LayoutDashboard, Upload, List, LogOut } from 'lucide-react';
+import { Receipt, LayoutDashboard, Upload, List, LogOut, BarChart3, Wallet, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -12,6 +12,9 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Upload Receipt', href: '/upload', icon: Upload },
   { name: 'All Receipts', href: '/receipts', icon: List },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+  { name: 'Budgets', href: '/budgets', icon: Wallet },
+  { name: 'Reports', href: '/reports', icon: FileText },
 ];
 
 export function SidebarLayout({ children }: { children: ReactNode }) {
