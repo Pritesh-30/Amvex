@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+venv/
+.env
+
+# Uploads
+uploads/
+
+# Dataset
+data/
+
+# Checkpoints
+*.checkpoint
+
+# OS
+.DS_Store
+Thumbs.db
+
+train_list.txt
