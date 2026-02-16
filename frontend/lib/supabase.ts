@@ -8,4 +8,5 @@ export type Receipt = {
   category: string | null;
   image_url: string | null;
   created_at: string | null;
+  status: 'PAID' | 'UNPAID' | null;
 };

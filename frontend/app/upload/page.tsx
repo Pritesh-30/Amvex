@@ -252,7 +252,7 @@ function parseOCRDate(dateStr: string): string | null {
                   <div>
                     <Label>Total Amount</Label>
                     <Input
-                      value={`$${ocrResult.total.toFixed(2)}`}
+                      value={`₹${ocrResult.total.toFixed(2)}`}
                       readOnly
                       className="mt-1"
                     />
