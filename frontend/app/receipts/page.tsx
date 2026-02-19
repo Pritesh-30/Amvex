@@ -197,6 +197,7 @@ export default function ReceiptsPage() {
                   <TableRow>
                     <TableHead>Image</TableHead>
                     <TableHead>Vendor</TableHead>
+                    <TableHead>Category</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Total</TableHead>
                     <TableHead>Status</TableHead>
@@ -219,6 +220,12 @@ export default function ReceiptsPage() {
 
                       <TableCell className="font-medium">
                         {receipt.vendor}
+                      </TableCell>
+
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {receipt.category || 'Other'}
+                        </Badge>
                       </TableCell>
 
                       <TableCell>
