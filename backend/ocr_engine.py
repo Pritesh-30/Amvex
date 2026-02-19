@@ -4,7 +4,7 @@ import numpy as np
 from extract_fields import extract_data
 
 # Set tesseract path (Windows)
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 
 def process_receipt(image_path: str):

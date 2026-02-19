@@ -9,6 +9,10 @@ import { Receipt } from '@/lib/supabase';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
+  Dialog,
+  DialogContent,
+} from '@/components/ui/dialog';
+import {
   Table,
   TableBody,
   TableCell,
@@ -16,7 +20,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { Search, Image as ImageIcon, Trash2, X, CheckCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export default function ReceiptsPage() {
   const { user } = useAuth();
@@ -24,6 +29,7 @@ export default function ReceiptsPage() {
   const [filteredReceipts, setFilteredReceipts] = useState<Receipt[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -98,6 +104,42 @@ export default function ReceiptsPage() {
     return data?.publicUrl || null;
   };
 
+  const handleMarkAsPaid = async (receiptId: string) => {
+    try {
+      const { error } = await supabaseBrowser
+        .from('receipts')
+        .update({ status: 'PAID' })
+        .eq('id', receiptId);
+
+      if (error) throw error;
+
+      setReceipts(receipts.map((r) =>
+        r.id === receiptId ? { ...r, status: 'PAID' as const } : r
+      ));
+    } catch (error) {
+      console.error('Error marking receipt as paid:', error);
+      alert('Failed to update receipt status');
+    }
+  };
+
+  const handleMarkAsUnpaid = async (receiptId: string) => {
+    try {
+      const { error } = await supabaseBrowser
+        .from('receipts')
+        .update({ status: 'UNPAID' })
+        .eq('id', receiptId);
+
+      if (error) throw error;
+
+      setReceipts(receipts.map((r) =>
+        r.id === receiptId ? { ...r, status: 'UNPAID' as const } : r
+      ));
+    } catch (error) {
+      console.error('Error marking receipt as unpaid:', error);
+      alert('Failed to update receipt status');
+    }
+  };
+
   return (
     <ProtectedRoute>
       <SidebarLayout>
@@ -157,6 +199,7 @@ export default function ReceiptsPage() {
                     <TableHead>Vendor</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Total</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -168,7 +211,8 @@ export default function ReceiptsPage() {
                           <img
                             src={getImageUrl(receipt.image_url) || ''}
                             alt={receipt.vendor || 'Receipt'}
-                            className="w-16 h-16 object-cover rounded border"
+                            className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => setSelectedImage(getImageUrl(receipt.image_url))}
                           />
                         )}
                       </TableCell>
@@ -184,10 +228,41 @@ export default function ReceiptsPage() {
                       </TableCell>
 
                       <TableCell>
-                        ${Number(receipt.total || 0).toFixed(2)}
+                        ₹{Number(receipt.total || 0).toFixed(2)}
                       </TableCell>
 
-                      <TableCell className="text-right">
+                      <TableCell>
+                        {receipt.status === 'PAID' ? (
+                          <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                            Paid
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
+                            Unpaid
+                          </Badge>
+                        )}
+                      </TableCell>
+
+                      <TableCell className="text-right space-x-2">
+                        {receipt.status === 'UNPAID' ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleMarkAsPaid(receipt.id)}
+                            title="Mark as Paid"
+                          >
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleMarkAsUnpaid(receipt.id)}
+                            title="Mark as Unpaid"
+                          >
+                            <X className="h-4 w-4 text-orange-600" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"
@@ -211,6 +286,29 @@ export default function ReceiptsPage() {
             </div>
           )}
         </div>
+
+        {/* Image Preview Modal */}
+        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+          <DialogContent className="max-w-4xl p-0 bg-transparent border-none">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full"
+                onClick={() => setSelectedImage(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              {selectedImage && (
+                <img
+                  src={selectedImage}
+                  alt="Receipt"
+                  className="max-w-full max-h-[80vh] object-contain rounded-lg mx-auto"
+                />
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </SidebarLayout>
     </ProtectedRoute>
   );
